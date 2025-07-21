@@ -67,15 +67,12 @@ import { ref, computed, onMounted, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// ✅ Marker-Bilder setzen, damit sie auf allen Browsern angezeigt werden
+// 🔧 Leaflet Icons fixen
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl:
-    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl:
-    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
 const districts = ref([])
@@ -90,9 +87,11 @@ const filteredPlaygrounds = computed(() => {
   )
 })
 
+// 🧼 Text säubern: Entfernt führende Beistriche + Leerzeichen
 function shorten(text) {
   if (!text) return 'Keine Beschreibung verfügbar'
-  return text.length > 100 ? text.slice(0, 100) + '…' : text
+  const cleanText = text.replace(/^,\s*/, '') // z. B. ", mit Rutsche" → "mit Rutsche"
+  return cleanText.length > 100 ? cleanText.slice(0, 100) + '…' : cleanText
 }
 
 onMounted(async () => {
@@ -130,9 +129,7 @@ watch(filteredPlaygrounds, neueDaten => {
 function updateMarkers(data) {
   if (!map) return
   map.eachLayer(layer => {
-    if (layer instanceof L.Marker) {
-      map.removeLayer(layer)
-    }
+    if (layer instanceof L.Marker) map.removeLayer(layer)
   })
 
   data.forEach(p => {
@@ -164,13 +161,6 @@ function zoomToDistrict(data) {
 <style scoped>
 @import url('https://handbuch.wien.gv.at/pattern-library/v1/css/pattern.min.css');
 
-/* 🌐 Basis-Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   background-color: #fefefe;
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -178,14 +168,12 @@ body {
   color: #333;
 }
 
-/* 🧱 Hauptcontainer */
 main.container {
   max-width: 960px;
   margin: 0 auto;
   padding: 1rem;
 }
 
-/* 🎠 Karten-Layout */
 .grid-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -218,7 +206,6 @@ main.container {
   line-height: 1.4;
 }
 
-/* 🗺️ Leaflet-Karte */
 .map-box {
   width: 100%;
   height: 400px;
@@ -227,7 +214,6 @@ main.container {
   margin-bottom: 2rem;
 }
 
-/* 📱 Responsive Anpassung */
 @media (max-width: 768px) {
   .grid-list {
     grid-template-columns: 1fr;
@@ -246,11 +232,46 @@ main.container {
   }
 }
 
-/* 📝 Footer */
 footer {
   margin-top: 3rem;
   font-size: 0.85rem;
   text-align: center;
   color: #777;
+}
+
+/* 🌙 Darkmode via Systempräferenz */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #eee;
+  }
+
+  .play-card {
+    background-color: #1e1e1e;
+    border-color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-title {
+    color: #ffcc00;
+  }
+
+  .card-text {
+    color: #ccc;
+  }
+
+  .map-box {
+    border-color: #444;
+  }
+
+  footer {
+    color: #aaa;
+  }
+
+  .info-box-success {
+    background-color: #1e1e1e;
+    border-color: #444;
+    color: #ccf3cc;
+  }
 }
 </style>

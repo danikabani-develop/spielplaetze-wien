@@ -21,10 +21,7 @@
       </select>
     </section>
 
-    <section
-      v-if="filteredPlaygrounds.length"
-      class="info-box info-box-success space-md"
-    >
+    <section v-if="filteredPlaygrounds.length" class="info-box space-md">
       <h2 class="h3">
         ✅ Gefundene Spielplätze: {{ filteredPlaygrounds.length }}
       </h2>
@@ -67,7 +64,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// 🔧 Leaflet Icons fixen
+// 🧭 Leaflet Icons fixen
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -87,11 +84,11 @@ const filteredPlaygrounds = computed(() => {
   )
 })
 
-// 🧼 Text säubern: Entfernt führende Beistriche + Leerzeichen
+// 🧼 Beistrich bereinigen
 function shorten(text) {
   if (!text) return 'Keine Beschreibung verfügbar'
-  const cleanText = text.replace(/^,\s*/, '') // z. B. ", mit Rutsche" → "mit Rutsche"
-  return cleanText.length > 100 ? cleanText.slice(0, 100) + '…' : cleanText
+  const cleaned = text.replace(/^,\s*/, '')
+  return cleaned.length > 100 ? cleaned.slice(0, 100) + '…' : cleaned
 }
 
 onMounted(async () => {
@@ -174,6 +171,10 @@ main.container {
   padding: 1rem;
 }
 
+.form-control {
+  margin-left: 0.5rem;
+}
+
 .grid-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -239,7 +240,7 @@ footer {
   color: #777;
 }
 
-/* 🌙 Darkmode via Systempräferenz */
+/* 🌙 Darkmode Darstellung */
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #121212;
@@ -268,9 +269,9 @@ footer {
     color: #aaa;
   }
 
-  .info-box-success {
-    background-color: #1e1e1e;
-    border-color: #444;
+  .info-box {
+    background-color: transparent;
+    border: none;
     color: #ccf3cc;
   }
 }
